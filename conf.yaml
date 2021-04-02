@@ -17,3 +17,20 @@ programs:
     stoptime: 10
     stdout: /tmp/ls.stdout
     stderr: /tmp/ls.stderr
+  a.out:
+    cmd: "./a.out"
+    numprocs: 4
+    umask: 022
+    workingdir: ./
+    autostart: true
+    autorestart: false
+    exitcodes:
+      - 0
+      - 2
+      - -9
+    startretries: 3
+    starttime: 1
+    stopsignal: TERM
+    stoptime: 10
+    stdout: /tmp/a.stdout
+    stderr: /tmp/a.stderr
