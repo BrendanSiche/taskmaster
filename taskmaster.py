@@ -1,4 +1,4 @@
-import yaml, subprocess, time, os
+import yaml, subprocess, time, os, signal
 from datetime import datetime
 
 running = {}
@@ -35,11 +35,14 @@ def execute_subprocess(param):
     string = ''
     cwd = param['workingdir'] if param['workingdir'] else None     
     umsk = param['umask'] if param['umask'] else -1
+    env = os.environ.copy()
+    if 'env' in param:
+        env = env | param['env']
     if check_file(param.get('stdout')) and check_file(param.get('stderr')):
         with open(param['stdout'], 'a') as sout, open(param['stderr'], 'a') as serr:
-            process = subprocess.Popen(cmd, cwd=cwd, stdout=sout, stderr=serr, umask=umsk)
+            process = subprocess.Popen(cmd, cwd=cwd, stdout=sout, stderr=serr, umask=umsk, env=env)
     else:
-        process = subprocess.Popen(cmd, cwd=cwd, umask=umsk)
+        process = subprocess.Popen(cmd, cwd=cwd, umask=umsk, env=env)
     pname = param['cmd'] + ' process number: ' + str(len(running[param['cmd']]))
     new['id'] = pname
     new['process'] = process
@@ -48,7 +51,15 @@ def execute_subprocess(param):
     running[param['cmd']].append(new)
 
 
-def check_time(first, second):
+def check_uptime(first, second):
+    now = datetime.now()
+    diff = now - first
+    print('Timecheck = ', diff.seconds)
+    if(diff.seconds >= second):
+        return(True)
+    return(False)
+
+def check_downtime(first, second):
     now = datetime.now()
     diff = now - first
     print('Timecheck = ', diff.seconds)
@@ -71,14 +82,21 @@ def how_many_running(param):
             session_history[name].append(elem)
             ran.append(elem)
             done += 1
-            print('No more a')
         else:
-            if check_time(elem['start_time'], param['starttime']) == True: 
+            if check_uptime(elem['start_time'], param['starttime']) == True: 
                 elem['confirm'] = 'True'
-            new_running.append(elem)
-            cur += 1
+            if 'killed_time' in elem and check_downtime(elem['killed_time'], param.get('stoptime')) == True:
+                force_kill(param)
+                if name not in session_history:
+                    session_history[name] = []
+                session_history[name].append(elem)
+                ran.append(elem)
+                done += 1
+            else:
+                new_running.append(elem)
+                cur += 1
     running[name] = new_running
-    print(done, ' process of ', name, 'have been succesfully executed')
+    print(done, ' process of ', name, 'have been executed')
     print(cur, ' process of ', name, 'still running')
     return(ran,done,cur)
 
@@ -106,6 +124,31 @@ def follow_conf_launch(param):
     for x in range(j):
         execute_subprocess(param)
 
+def signal_dict(strsig):
+    if strsig == 'TERM' or strsig == 'SIGTERM':
+        return(signal.SIGTERM)
+    if strsig == 'INT' or strsig == 'SIGINT':
+        return(signal.SIGINT)
+    if strsig == 'QUIT' or strsig == 'SIGQUIT':
+        return(signal.SIGQUIT)
+    if strsig == 'HUP' or strsig == 'SIGHUP':
+        return(signal.SIGHUP)
+    if strsig == 'KILL' or strsig == 'SIGKILL':
+        return(signal.SIGKILL)
+    
+def force_kill(param):
+    cur = 0
+    done = 0
+    new_running = []
+    ran = []
+    name = param['cmd']
+    if running.get(name) == None:
+        return(0)
+    for elem in running[name]:
+        elem['process'].kill()
+        print('Forcefully killed process ', param['cmd'], 'of pid: ', str(elem['process'].pid))
+    return(0)
+
 def grace_kill(param):
     cur = 0
     done = 0
@@ -116,20 +159,33 @@ def grace_kill(param):
     if running.get(name) == None:
         return(0)
     for elem in running[name]:
-        print('killing a')
-        elem['process'].kill()
-        time.sleep(1)
+        #elem['process'].send_signal(signal_dict(param['stopsignal']))
+        elem['killed_time'] = datetime.now()
         print(elem['process'].poll())
     return(0)
 
 
+#A run toutes les secondes
+def background_check(config):
+    #ouvrir un thread
+    for elem in config['programs']:
+        check_on_process(config['programs']['elem'])
+    #clore le thread
+
 
 check_config()
+execute_subprocess(config['programs']['a.out'])
+execute_subprocess(config['programs']['a.out'])
 execute_subprocess(config['programs']['a.out'])
 print('launched')
 check_on_process(config['programs']['a.out'])
 time.sleep(3)
 print('checked')
 grace_kill(config['programs']['a.out'])
-print('killed')
+print('pretend to be killed')
+time.sleep(1)
+check_on_process(config['programs']['a.out'])
+print('Checked once')
+time.sleep(5)
+print('Checked twice')
 check_on_process(config['programs']['a.out'])
