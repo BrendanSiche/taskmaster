@@ -1,4 +1,4 @@
-import argparse, cmd,sys, process
+import argparse, cmd,sys, signal, process
 
 # RED = '91' , GREEN = '92' YELLOW = '93'
 # BLUE = '94' CYAN = '96' MAGENTA = '35'
@@ -40,7 +40,8 @@ def start_process(arg,conf):
                 print(f"{Tcolors.CRO}", Tcolors.colorize(Tcolors.UDRL + " Program not found : " + str(params[cur]) + "\n",91))
             else:
                 print(f"{Tcolors.GARR}",Tcolors.colorize(Tcolors.UDRL + " Program : " + str(params[cur]) + "\n",94))
-                process.check_on_process(config['programs'][params[cur]])
+                process.follow_conf_launch(config['programs'][params[cur]])
+                #process.check_on_process(config['programs'][params[cur]])
             cur +=1
             print("\n")
         return (0)
@@ -114,24 +115,33 @@ class TskConsol(cmd.Cmd):
     def do_stop(self,arg):
         '\t\033[93m\033[1m stop: stop job \n\033[94m| Usage : $> <stop [process ...]>' 
         print(Tcolors.colorize("\t == * Stop * == \n",35))
+        #grace_kill_
     def do_restart(self,arg):
         '\t\033[93m\033[1m restart: restart job \n\033[94m| Usage : $> <restart [process ...]>' 
         print(Tcolors.colorize("\t == * Restart * == \n",35))
+        # veri how many running return 0 sinon >> force kill verif qu il y a 0process quui tourne + follow conf launch
     def do_reload(self,arg):
         '\t\033[93m\033[1m reload  : reload job \n\033[94m| Usage : $> <reload [process ...]>' 
         print(Tcolors.colorize("\t == * Reload * == \n",35))
+        # init_tsk check diff + maj le tab
     def do_quit(self,arg):
         '\t\033[93m\033[1m quit/exit  : kill all process and quit taskmaster \n\033[94m| Usage : $> <quit>' 
         print(Tcolors.colorize("\t == * Quit/Exit * == ",35))
         print(Tcolors.colorize("\t == * Do you want quit Taskmaster? y/n * == ",35))
         print(Tcolors.colorize("\t == * All processes will be killed  * == ",35))
       # self.close()
+      # force_kill si on veux 
         print("Bye!")
         return True
     def do_exit(self,arg):
         '\t\033[93m\033[1m quit/exit  : kill all process and quit taskmaster \n\033[94m| Usage : $> <exit>' 
         self.do_quit(arg)
         return True
+    def do_EOF(self,arg):
+        return True
+    def handler(signum, frame):
+        print(Tcolors.colorize("\t == * Caught CTRL-C, press enter to continue or exit/quit to leave* == \n", 91))
+    signal.signal(signal.SIGINT, handler)
 
 def loop():
     TskConsol().init_tsk()

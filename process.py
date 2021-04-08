@@ -127,7 +127,7 @@ def check_on_process(param):
             print(error)
 
 def follow_conf_launch(param):
-    i = how_many_running(param)
+    i = how_many_running(param)[2]
     j = param['numprocs']
     j = j - i
     for x in range(j):
