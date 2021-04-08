@@ -1,0 +1,35 @@
+General:
+  jsp: lol
+programs:
+  ls:
+    autorestart: unexpected
+    autostart: 'true'
+    cmd: /bin/ls
+    exitcodes:
+    - 0
+    - 2
+    numprocs: 1
+    startretries: 3
+    starttime: 5
+    stderr: /tmp/ls.stderr
+    stdout: /tmp/ls.stdout
+    stopsignal: TERM
+    stoptime: 10
+    umask: 18
+    workingdir: /tmp
+  pwd:
+    autorestart: unexpected
+    autostart: 'true'
+    cmd: /bin/pwd
+    exitcodes:
+    - 0
+    - 2
+    numprocs: 1
+    startretries: 3
+    starttime: 5
+    stderr: /tmp/pwd.stderr
+    stdout: /tmp/pwd.stdout
+    stopsignal: TERM
+    stoptime: 10
+    umask: 18
+    workingdir: /tmp
