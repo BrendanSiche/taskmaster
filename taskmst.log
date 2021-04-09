@@ -1,9 +1,0 @@
-2021-04-09 15:28:20,460 INFO     root            Initialisation Taskmaster
-2021-04-09 15:29:09,874 INFO     root            Initialisation Taskmaster
-2021-04-09 15:29:09,879 WARNING  root            Config : Default Config file Created: -> 'defconf.yaml'
-2021-04-09 15:29:09,891 INFO     root            Thread : Id: 1 Name: th1 Conf: {'General': {'jsp': 'lol'}, 'programs': {'ls': {'autorestart': 'unexpected', 'autostart': 'true', 'cmd': '/bin/ls', 'exitcodes': [0, 2], 'numprocs': 1, 'startretries': 3, 'starttime': 5, 'stderr': '/tmp/ls.stderr', 'stdout': '/tmp/ls.stdout', 'stopsignal': 'TERM', 'stoptime': 10, 'umask': 18, 'workingdir': '/tmp'}, 'pwd': {'autorestart': 'unexpected', 'autostart': 'true', 'cmd': '/bin/pwd', 'exitcodes': [0, 2], 'numprocs': 1, 'startretries': 3, 'starttime': 5, 'stderr': '/tmp/pwd.stderr', 'stdout': '/tmp/pwd.stdout', 'stopsignal': 'TERM', 'stoptime': 10, 'umask': 18, 'workingdir': '/tmp'}}}
-2021-04-09 15:29:09,893 INFO     root            Starting Thread
-2021-04-09 15:29:11,898 INFO     root            Thread : checking process ls
-2021-04-09 15:29:11,904 INFO     root            Thread : checking process pwd
-2021-04-09 15:29:13,910 INFO     root            Thread : checking process ls
-2021-04-09 15:29:13,914 INFO     root            Thread : checking process pwd
