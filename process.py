@@ -1,6 +1,7 @@
-import yaml, subprocess, time, os, sys, signal, tskconsol
+import yaml,threading, subprocess, time, os, sys, signal, tskconsol
 from datetime import datetime
 import config
+import bidon
 running = {}
 session_history = {}
 should_be_running = []
@@ -174,11 +175,23 @@ def grace_kill(param):
     return(0)
 
 
+
+def thprint(thrname, delay):
+    count = 0
+    while count < 5:
+        time.sleep(0.1)
+        print(thrname, time.ctime(time.time()))
+
 #A run toutes les secondes
-def background_check(config):
-    #ouvrir un thread
+def background_check(config, count):
+    thr = bidon.Thr(1, "thr1", count)
+    thr.start()
+    print("THR NEW")
     for elem in config['programs']:
-        check_on_process(config['programs']['elem'])
+        check_on_process(config['programs'][elem])
+        #print(config['programs'][elem])
+    thr.exit()
+    print("THR EXIT")
     #clore le thread
 
 

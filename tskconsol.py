@@ -25,6 +25,26 @@ def close(self):
         self.file.close()
         self.file = None
 
+def stop_process(arg, conf):
+    params = 0
+    for elem in arg:
+        params = arg.split()
+    if params == 0:
+        print(Tcolors.colorize(Tcolors.CRO + " == * /!\ Stop Command Needs A Program Name Valid: /!\ * == \n",91))
+        print("\n")
+        return (0)
+    else:
+        cur = 0
+        for elem in params:
+            if params[cur] not in conf['programs']:
+                print(f"{Tcolors.CRO}", Tcolors.colorize(Tcolors.UDRL + " Program not found : " + str(params[cur]) + "\n",91))
+            else:
+                print(f"{Tcolors.GARR}",Tcolors.colorize(Tcolors.UDRL + " Program : " + str(params[cur]) + "\n",94))
+                process.grace_kill(config['programs'][params[cur]])
+            cur +=1
+            print("\n")
+        return (0)
+
 def start_process(arg,conf):
     params = 0
     for elem in arg:
@@ -99,11 +119,18 @@ class TskConsol(cmd.Cmd):
     intro = f"\033[93m{Tcolors.BLD} ===== Taskmaster: another job control deamon ===== \n\
     \033[96m use '?' to view commands list or 'help <cmd>' to see the method of use a command\n{Tcolors.CLR}"
     global config
+    count = 0
     file = None
 
     def init_tsk(self):
         print(Tcolors.colorize(" == Config file == \n",93))
         config = setup_config()
+    def update_tsk(config,count):
+            while 1:
+                process.background_check(config, count)
+                count+=1
+                print("tr")
+        #print(Tcolors.colorize(" == Config file == \n",93))
     def do_status(self,arg):
         '\t\033[93m\033[1m status: shows all controlled process \n\033[94m| Usage for all: $> <status> \n| Usage for specific(s) process: $> <status [process1 ...]>' 
         print(Tcolors.colorize("\t == * Status * == \n",35))
@@ -113,6 +140,7 @@ class TskConsol(cmd.Cmd):
         print(Tcolors.colorize("\t == * Start * == \n",35))
         start_process(arg,config)
     def do_stop(self,arg):
+
         '\t\033[93m\033[1m stop: stop job \n\033[94m| Usage : $> <stop [process ...]>' 
         print(Tcolors.colorize("\t == * Stop * == \n",35))
         #grace_kill_
@@ -142,7 +170,7 @@ class TskConsol(cmd.Cmd):
     def handler(signum, frame):
         print(Tcolors.colorize("\t == * Caught CTRL-C, press enter to continue or exit/quit to leave* == \n", 91))
     signal.signal(signal.SIGINT, handler)
-
+    update_tsk(config,count)
 def loop():
     TskConsol().init_tsk()
     print("in loop")
