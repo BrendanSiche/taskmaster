@@ -102,14 +102,13 @@ def stat_process(arg, conf):
     params = 0
     for elem in arg:
         params = arg.split()
-    print (params)
     if params == 0:
         cur = 0
         for elem in conf['programs']:
             print(f"{Tcolors.GARR}",Tcolors.colorize(Tcolors.UDRL + " Program : " + str(elem) + "\n",94))
-            process.how_many_running(conf['programs'][elem])
+            ran = process.how_many_running(conf['programs'][elem])[2]
             cur +=1
-            print("\n")
+            print(ran, "\n")
         return (0)
     if len(params) == 1:
         if params[0] not in conf['programs']:
@@ -117,8 +116,8 @@ def stat_process(arg, conf):
             print(f"{Tcolors.CRO}", Tcolors.colorize(Tcolors.UDRL + " Program not found : " + str(params[0]) + "\n",91))
         else:
             print(f"{Tcolors.GARR}",Tcolors.colorize(Tcolors.UDRL + " Program : " + str(params[0]) + "\n",94))
-            process.how_many_running(conf['programs'][params[0]])
-        print("\n")
+            ran = process.how_many_running(conf['programs'][params[0]])[2]
+        print(ran, "\n")
         return (0)
     if len(params) > 1:
         cur = 0
@@ -128,9 +127,9 @@ def stat_process(arg, conf):
                 print(f"{Tcolors.CRO}", Tcolors.colorize(Tcolors.UDRL + " Program not found : " + str(params[cur]) + "\n",91))
             else:
                 print(f"{Tcolors.GARR}",Tcolors.colorize(Tcolors.UDRL + " Program : " + str(params[cur]) + "\n",94))
-                process.how_many_running(conf['programs'][params[cur]])
+                ran = process.how_many_running(conf['programs'][params[cur]])[2]
             cur +=1
-            print("\n")
+            print(ran, "\n")
         return (0)
 
 def setup_config():

@@ -68,7 +68,6 @@ def execute_subprocess(param):
 def check_uptime(first, second):
     now = datetime.now()
     diff = now - first
-    print('Timecheck = ', diff.seconds)
     if(diff.seconds >= second):
         return(True)
     return(False)
@@ -76,7 +75,6 @@ def check_uptime(first, second):
 def check_downtime(first, second):
     now = datetime.now()
     diff = now - first
-    print('Timecheck = ', diff.seconds)
     if(diff.seconds >= second):
         return(True)
     return(False)
@@ -112,8 +110,8 @@ def how_many_running(param):
     running[name] = new_running
     logging.info(f"\u2714 Process : {str(done)} process of {name}")
     logging.info(f"\u231B Process : {str(cur)} process of {name} still running ...")
-    print(f"{tskconsol.Tcolors.GARR}",tskconsol.Tcolors.colorize(str(done) + ' process of ' + name + ' have been executed',94))
-    print(tskconsol.Tcolors.colorize(str(cur) + ' process of ' + name + ' still running ...',94),f"{tskconsol.Tcolors.ST}",)
+#    print(f"{tskconsol.Tcolors.GARR}",tskconsol.Tcolors.colorize(str(done) + ' process of ' + name + ' have been executed',94))
+#    print(tskconsol.Tcolors.colorize(str(cur) + ' process of ' + name + ' still running ...',94),f"{tskconsol.Tcolors.ST}",)
     return(ran,done,cur)
 
 def check_on_process(param):
@@ -121,17 +119,16 @@ def check_on_process(param):
     for elem in ran:
         if elem['process'].poll() not in param['exitcodes']:
             error = 'Error : Process ' + param['cmd'] + ' of pid '  + str(elem['process'].pid)  + ' exited with code: ' + str(elem['process'].poll())
-            print(error)
+            print(error, param['autorestart'])
             if param['autorestart'] == 'unexpected':
                 logging.error(f"\u271D Relaunching process following unexpected end")
                 print('relaunching process following unexpected end')
                 execute_subprocess(param)
-        else:
-            if param['autorestart']:
-                logging.info(f"Relaunching process as expected")
-                print('relaunching process as expected')
-                execute_subprocess(param)
-        if param.get('starttime') != None and elem.get('confirm') == None:
+        if param['autorestart'] == True:
+            logging.info(f"Relaunching process as expected")
+            print('relaunching process as expected')
+            execute_subprocess(param)
+        if (param.get('starttime') != None and param.get('starttime') != 0) and elem.get('confirm') == None:
             error = 'Error : Process ' + param['cmd'] + ' of pid '  + str(elem['process'].pid)  + ' exited with code: ' + str(elem['process'].poll()) + ' before reaching set start time'
             logging.error(f"\u271D {error}")
             print(error)
