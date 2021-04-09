@@ -1,4 +1,4 @@
-import yaml, os, sys, tskconsol
+import yaml, os, sys, tskconsol, logging
 
 class Config():
     
@@ -46,6 +46,7 @@ class Config():
             }
         with open('defconf.yaml', 'w') as yaml_file:
             yaml.dump(default_conf, yaml_file, default_flow_style=False)
+        logging.warning(f"Config : Default Config file Created: -> 'defconf.yaml'")
         print(f"\t {tskconsol.Tcolors.GARR} ", tskconsol.Tcolors.colorize(" == * Config file Created: ->' defconf.yaml '" +" * == \n",91))
         #print(f"{tskconsol.Tcolors.GREEN}{tskconsol.Tcolors.BLD} Config file Created: /!\ ' defconf.yaml '\n{tskconsol.Tcolors.CLR}")
         return yaml_file 

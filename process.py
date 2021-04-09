@@ -1,4 +1,4 @@
-import yaml,threading, subprocess, time, os, sys, signal, tskconsol
+import yaml,threading, subprocess, time, os, sys, signal, tskconsol, logging, config
 from datetime import datetime
 import config
 import bidon
@@ -22,6 +22,7 @@ def check_validfile():
         "workingdir": str,}
     if len(sys.argv) == 2:
         arg = sys.argv[1]
+        logging.info(f"Config : Config file -> {sys.argv[1]}")
     else:
         config.Config.creat_defconfig()
         arg = 'defconf.yaml'
@@ -30,6 +31,8 @@ def check_validfile():
     if arg == 'defconf.yaml':
         return param
     if 'programs' not in param:
+        print(f"{Tcolors.CRO}", Tcolors.colorize(Tcolors.UDRL + " Ivalid Config File : 'programs' atribute not found \n",91))
+        logging.error(f" Ivalid Config File : 'programs' atribute not found \n")
         exit()
     for key in param['programs']:
         if config.Config.check_val(param['programs'][key],values) == False:
@@ -175,29 +178,12 @@ def grace_kill(param):
         print(elem['process'].poll())
     return(0)
 
-
-
-def thprint(thrname, delay):
-    count = 0
-    while count < 5:
-        time.sleep(0.1)
-        print(thrname, time.ctime(time.time()))
-
-
-#def update_tsk(count):
- #   print (config)
-  #      while 1:
-   #         process.background_check(config, count)
-    #        count+=1
-     #       print("tr")
-
 #A run toutes les secondes
 def background_check(config):
-    print("THR NEW")
     for elem in config['programs']:
+        logging.info(f'Thread : checking process {elem}')
         check_on_process(config['programs'][elem])
         #print(config['programs'][elem])
-    print("THR EXIT")
     #clore le thread
 
 

@@ -1,4 +1,4 @@
-import argparse, cmd,sys, signal, process, bidon, time
+import argparse, cmd,sys, signal, process, bidon, time,logging, logging.config
 
 # RED = '91' , GREEN = '92' YELLOW = '93'
 # BLUE = '94' CYAN = '96' MAGENTA = '35'
@@ -134,6 +134,7 @@ def setup_config():
             print("\t", Tcolors.colorize(str(k) + " : " + str(elem),94))
         print("\n")
     print(Tcolors.colorize(Tcolors.UDRL + " ... Config file Load ... \n", 91))
+    #logging.info(f'Thread : checking process {elem}')
     for key in config['programs']:
         numprocs = config['programs'][key]['numprocs']
         print("LOOOLLL", numprocs)
@@ -150,10 +151,12 @@ class TskConsol(cmd.Cmd):
     intro = f"\033[93m{Tcolors.BLD} ===== Taskmaster: another job control deamon ===== \n\
     \033[96m use '?' to view commands list or 'help <cmd>' to see the method of use a command\n{Tcolors.CLR}"
     global config
+ 
     count = 0
     file = None
 
     def init_tsk(self):
+        logging.info('Initialisation Taskmaster')
         print(Tcolors.colorize(" == Config file == \n",93))
         config = setup_config()
         return config
@@ -202,6 +205,7 @@ def loop():
     thr = bidon.Thr(1,"th1",config)
     thr.daemon = True
     thr.start()
+    logging.info('Starting Thread')
     print("in loop")
     TskConsol().cmdloop()
 
