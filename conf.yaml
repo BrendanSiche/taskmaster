@@ -1,7 +1,7 @@
 programs:
   a.out:
     cmd: "./a.out"
-    numprocs: 3
+    numprocs: 5
     umask: 022
     workingdir: ./
     autostart: true
