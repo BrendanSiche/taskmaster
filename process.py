@@ -29,14 +29,16 @@ def check_validfile():
     with open(arg, 'r') as yaml_file:
         param = yaml.safe_load(yaml_file)
     if arg == 'defconf.yaml':
+        logging.info(f"\u2714 Config File : Check OK!")
         return param
     if 'programs' not in param:
-        print(f"{Tcolors.CRO}", Tcolors.colorize(Tcolors.UDRL + " Ivalid Config File : 'programs' atribute not found \n",91))
-        logging.error(f" Ivalid Config File : 'programs' atribute not found \n")
+        print(f"{tskconsol.Tcolors.CRO}", tskconsol.Tcolors.colorize(Tcolors.UDRL + " Ivalid Config File : 'programs' atribute not found \n",91))
+        logging.error(f"\u271D Ivalid Config File : 'programs' atribute not found")
         exit()
     for key in param['programs']:
         if config.Config.check_val(param['programs'][key],values) == False:
             exit()
+    logging.info(f"\u2714 Config File : Check OK!")
     return param
 
 def execute_subprocess(param):
@@ -85,7 +87,6 @@ def how_many_running(param):
     new_running = []
     ran = []
     name = param['cmd']
-    print(param)
     if running.get(name) == None:
         return(0)
     for elem in running[name]:
@@ -109,6 +110,8 @@ def how_many_running(param):
                 new_running.append(elem)
                 cur += 1
     running[name] = new_running
+    logging.info(f"\u2714 Process : {str(done)} process of {name}")
+    logging.info(f"\u231B Process : {str(cur)} process of {name} still running ...")
     print(f"{tskconsol.Tcolors.GARR}",tskconsol.Tcolors.colorize(str(done) + ' process of ' + name + ' have been executed',94))
     print(tskconsol.Tcolors.colorize(str(cur) + ' process of ' + name + ' still running ...',94),f"{tskconsol.Tcolors.ST}",)
     return(ran,done,cur)
@@ -120,14 +123,17 @@ def check_on_process(param):
             error = 'Error : Process ' + param['cmd'] + ' of pid '  + str(elem['process'].pid)  + ' exited with code: ' + str(elem['process'].poll())
             print(error)
             if param['autorestart'] == 'unexpected':
+                logging.error(f"\u271D Relaunching process following unexpected end")
                 print('relaunching process following unexpected end')
                 execute_subprocess(param)
         else:
             if param['autorestart']:
+                logging.info(f"Relaunching process as expected")
                 print('relaunching process as expected')
                 execute_subprocess(param)
         if param.get('starttime') != None and elem.get('confirm') == None:
             error = 'Error : Process ' + param['cmd'] + ' of pid '  + str(elem['process'].pid)  + ' exited with code: ' + str(elem['process'].poll()) + ' before reaching set start time'
+            logging.error(f"\u271D {error}")
             print(error)
         print("-----ok------")
 
@@ -139,6 +145,7 @@ def follow_conf_launch(param):
         execute_subprocess(param)
 
 def signal_dict(strsig):
+    logging.info(f"Setting Signals : {strsig}")
     if strsig == 'TERM' or strsig == 'SIGTERM':
         return(signal.SIGTERM)
     if strsig == 'INT' or strsig == 'SIGINT':
@@ -160,6 +167,7 @@ def force_kill(param):
         return(0)
     for elem in running[name]:
         elem['process'].kill()
+        logging.info(f"Forcefully killed process  : {param['cmd']} of pid: {str(elem['process'].pid)}")
         print('Forcefully killed process ', param['cmd'], 'of pid: ', str(elem['process'].pid))
     return(0)
 
@@ -175,6 +183,7 @@ def grace_kill(param):
     for elem in running[name]:
         #elem['process'].send_signal(signal_dict(param['stopsignal']))
         elem['killed_time'] = datetime.now()
+        logging.info(f"{elem['process'].poll()}")
         print(elem['process'].poll())
     return(0)
 

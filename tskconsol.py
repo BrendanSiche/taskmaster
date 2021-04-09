@@ -30,6 +30,7 @@ def restart_process(arg, conf):
     for elem in arg:
         params = arg.split()
     if params == 0:
+        logging.error(f"\u271D Restart Cmd without Args")
         print(Tcolors.colorize(Tcolors.CRO + " == * /!\ Restart Command Needs A Program Name Valid: /!\ * == \n",91))
         print("\n")
         return (0)
@@ -37,6 +38,7 @@ def restart_process(arg, conf):
         cur = 0
         for elem in params:
             if params[cur] not in conf['programs']:
+                logging.error(f"\u271D Program not found : {str(params[cur])}")
                 print(f"{Tcolors.CRO}", Tcolors.colorize(Tcolors.UDRL + " Program not found : " + str(params[cur]) + "\n",91))
             else:
                 print(f"{Tcolors.GARR}",Tcolors.colorize(Tcolors.UDRL + " Program : " + str(params[cur]) + "\n",94))
@@ -45,6 +47,7 @@ def restart_process(arg, conf):
                 ret = process.how_many_running(config['programs'][params[cur]])[2]
                 if ret > 0:
                     process.force_kill(config['programs'][params[cur]])
+                logging.info(f"Restarting Process : {config['programs'][params[cur]]}")
                 process.follow_conf_launch(config['programs'][params[cur]])
             cur +=1
             print("\n")
@@ -55,6 +58,7 @@ def stop_process(arg, conf):
     for elem in arg:
         params = arg.split()
     if params == 0:
+        logging.error(f"\u271D Stop Cmd without Args")
         print(Tcolors.colorize(Tcolors.CRO + " == * /!\ Stop Command Needs A Program Name Valid: /!\ * == \n",91))
         print("\n")
         return (0)
@@ -62,6 +66,7 @@ def stop_process(arg, conf):
         cur = 0
         for elem in params:
             if params[cur] not in conf['programs']:
+                logging.error(f"\u271D Program not found : {str(params[cur])}")
                 print(f"{Tcolors.CRO}", Tcolors.colorize(Tcolors.UDRL + " Program not found : " + str(params[cur]) + "\n",91))
             else:
                 print(f"{Tcolors.GARR}",Tcolors.colorize(Tcolors.UDRL + " Program : " + str(params[cur]) + "\n",94))
@@ -75,6 +80,7 @@ def start_process(arg,conf):
     for elem in arg:
         params = arg.split()
     if params == 0:
+        logging.error(f"\u271D Start Cmd without Args")
         print(Tcolors.colorize(Tcolors.CRO + " == * /!\ Start Command Needs A Program Name Valid: /!\ * == \n",91))
         print("\n")
         return (0)
@@ -82,6 +88,7 @@ def start_process(arg,conf):
         cur = 0
         for elem in params:
             if params[cur] not in conf['programs']:
+                logging.error(f"\u271D Program not found : {str(params[cur])}")
                 print(f"{Tcolors.CRO}", Tcolors.colorize(Tcolors.UDRL + " Program not found : " + str(params[cur]) + "\n",91))
             else:
                 print(f"{Tcolors.GARR}",Tcolors.colorize(Tcolors.UDRL + " Program : " + str(params[cur]) + "\n",94))
@@ -106,6 +113,7 @@ def stat_process(arg, conf):
         return (0)
     if len(params) == 1:
         if params[0] not in conf['programs']:
+            logging.error(f"\u271D Program not found : {str(params[0])}")
             print(f"{Tcolors.CRO}", Tcolors.colorize(Tcolors.UDRL + " Program not found : " + str(params[0]) + "\n",91))
         else:
             print(f"{Tcolors.GARR}",Tcolors.colorize(Tcolors.UDRL + " Program : " + str(params[0]) + "\n",94))
@@ -116,6 +124,7 @@ def stat_process(arg, conf):
         cur = 0
         for elem in params:
             if params[cur] not in conf['programs']:
+                logging.error(f"\u271D Program not found : {str(params[cur])}")
                 print(f"{Tcolors.CRO}", Tcolors.colorize(Tcolors.UDRL + " Program not found : " + str(params[cur]) + "\n",91))
             else:
                 print(f"{Tcolors.GARR}",Tcolors.colorize(Tcolors.UDRL + " Program : " + str(params[cur]) + "\n",94))
@@ -134,12 +143,16 @@ def setup_config():
             print("\t", Tcolors.colorize(str(k) + " : " + str(elem),94))
         print("\n")
     print(Tcolors.colorize(Tcolors.UDRL + " ... Config file Load ... \n", 91))
+    logging.info(f"Config file Load")
     #logging.info(f'Thread : checking process {elem}')
     for key in config['programs']:
         numprocs = config['programs'][key]['numprocs']
         print("LOOOLLL", numprocs)
+        logging.info(f"Exec Process : {config['programs'][key]}")
+        logging.info(f"Numprocs : {numprocs}")
         if numprocs > 1:
             for x in range(numprocs):
+                logging.info(f"Exec Process : {config['programs'][key]}")
                 process.execute_subprocess(config['programs'][key])
         else:
             process.execute_subprocess(config['programs'][key])
