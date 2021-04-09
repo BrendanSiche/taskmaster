@@ -191,10 +191,12 @@ class TskConsol(cmd.Cmd):
         print(Tcolors.colorize("\t == * Restart * == \n",35))
         restart_process(arg, config)
     def do_reload(self,arg):
-        '\t\033[93m\033[1m reload  : reload job \n\033[94m| Usage : $> <reload [process ...]>' 
+        '\t\033[93m\033[1m reload  : reload cconfig file \n\033[94m| Usage : $> <reload [process ...]>' 
         print(Tcolors.colorize("\t == * Reload * == \n",35))
+        logging.warning('Reloadig Config File')
         config = self.init_tsk()
     def do_quit(self,arg):
+        logging.warning('Exit/Quit Taskmaster')
         '\t\033[93m\033[1m quit/exit  : kill all process and quit taskmaster \n\033[94m| Usage : $> <quit>' 
         print(Tcolors.colorize("\t == * Quit/Exit * == ",35))
         print(Tcolors.colorize("\t == * Do you want quit Taskmaster? y/n * == ",35))
