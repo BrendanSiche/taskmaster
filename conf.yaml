@@ -17,7 +17,7 @@ programs:
     stderr: /tmp/ls.stderr
   a.out:
     cmd: "./a.out"
-    numprocs: 5
+    numprocs: 3
     umask: 022
     workingdir: ./
     autostart: true

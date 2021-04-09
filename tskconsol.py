@@ -1,4 +1,4 @@
-import argparse, cmd,sys, signal, process
+import argparse, cmd,sys, signal, process, bidon, time
 
 # RED = '91' , GREEN = '92' YELLOW = '93'
 # BLUE = '94' CYAN = '96' MAGENTA = '35'
@@ -24,6 +24,31 @@ def close(self):
     if self.file:
         self.file.close()
         self.file = None
+
+def restart_process(arg, conf):
+    params = 0
+    for elem in arg:
+        params = arg.split()
+    if params == 0:
+        print(Tcolors.colorize(Tcolors.CRO + " == * /!\ Restart Command Needs A Program Name Valid: /!\ * == \n",91))
+        print("\n")
+        return (0)
+    else:
+        cur = 0
+        for elem in params:
+            if params[cur] not in conf['programs']:
+                print(f"{Tcolors.CRO}", Tcolors.colorize(Tcolors.UDRL + " Program not found : " + str(params[cur]) + "\n",91))
+            else:
+                print(f"{Tcolors.GARR}",Tcolors.colorize(Tcolors.UDRL + " Program : " + str(params[cur]) + "\n",94))
+                process.grace_kill(config['programs'][params[cur]])
+                time.sleep(0.2)
+                ret = process.how_many_running(config['programs'][params[cur]])[2]
+                if ret > 0:
+                    process.force_kill(config['programs'][params[cur]])
+                process.follow_conf_launch(config['programs'][params[cur]])
+            cur +=1
+            print("\n")
+        return (0)
 
 def stop_process(arg, conf):
     params = 0
@@ -110,7 +135,13 @@ def setup_config():
         print("\n")
     print(Tcolors.colorize(Tcolors.UDRL + " ... Config file Load ... \n", 91))
     for key in config['programs']:
-        process.execute_subprocess(config['programs'][key])
+        numprocs = config['programs'][key]['numprocs']
+        print("LOOOLLL", numprocs)
+        if numprocs > 1:
+            for x in range(numprocs):
+                process.execute_subprocess(config['programs'][key])
+        else:
+            process.execute_subprocess(config['programs'][key])
     return config
 
 
@@ -125,11 +156,7 @@ class TskConsol(cmd.Cmd):
     def init_tsk(self):
         print(Tcolors.colorize(" == Config file == \n",93))
         config = setup_config()
-    def update_tsk(config,count):
-            while 1:
-                process.background_check(config, count)
-                count+=1
-                print("tr")
+        return config
         #print(Tcolors.colorize(" == Config file == \n",93))
     def do_status(self,arg):
         '\t\033[93m\033[1m status: shows all controlled process \n\033[94m| Usage for all: $> <status> \n| Usage for specific(s) process: $> <status [process1 ...]>' 
@@ -140,18 +167,17 @@ class TskConsol(cmd.Cmd):
         print(Tcolors.colorize("\t == * Start * == \n",35))
         start_process(arg,config)
     def do_stop(self,arg):
-
         '\t\033[93m\033[1m stop: stop job \n\033[94m| Usage : $> <stop [process ...]>' 
         print(Tcolors.colorize("\t == * Stop * == \n",35))
-        #grace_kill_
+        stop_process(arg, config)
     def do_restart(self,arg):
         '\t\033[93m\033[1m restart: restart job \n\033[94m| Usage : $> <restart [process ...]>' 
         print(Tcolors.colorize("\t == * Restart * == \n",35))
-        # veri how many running return 0 sinon >> force kill verif qu il y a 0process quui tourne + follow conf launch
+        restart_process(arg, config)
     def do_reload(self,arg):
         '\t\033[93m\033[1m reload  : reload job \n\033[94m| Usage : $> <reload [process ...]>' 
         print(Tcolors.colorize("\t == * Reload * == \n",35))
-        # init_tsk check diff + maj le tab
+        config = self.init_tsk()
     def do_quit(self,arg):
         '\t\033[93m\033[1m quit/exit  : kill all process and quit taskmaster \n\033[94m| Usage : $> <quit>' 
         print(Tcolors.colorize("\t == * Quit/Exit * == ",35))
@@ -170,11 +196,15 @@ class TskConsol(cmd.Cmd):
     def handler(signum, frame):
         print(Tcolors.colorize("\t == * Caught CTRL-C, press enter to continue or exit/quit to leave* == \n", 91))
     signal.signal(signal.SIGINT, handler)
-    update_tsk(config,count)
+
 def loop():
-    TskConsol().init_tsk()
+    config = TskConsol().init_tsk()
+    thr = bidon.Thr(1,"th1",config)
+    thr.daemon = True
+    thr.start()
     print("in loop")
     TskConsol().cmdloop()
+
     print("end loop")
 
 

@@ -1,20 +1,20 @@
-import threading, time
+import threading, time, process
 
 class Thr(threading.Thread):
-    def __init__(self, thrID, name,count):
+    global config
+    def __init__(self, thrID, name,conf):
         threading.Thread.__init__(self)
         self.thrID = thrID
         self.name = name
-        self.count = count
+        self.config = conf
     def run (self):
         print("starting Thread" + self.name)
-        print_time(self.name, self.count, 0.1)
+        while 1 :
+            time.sleep(2)
+            process.background_check(self.config)
+        print_time(self.name)
         print("extir thread" + self.name)
 
-def print_time(thrname,count, delay):
-    while count:
-        if exitFlag:
-            threadName.exit()
-    time.sleep(delay)
+def print_time(thrname):
+    time.sleep(0.1)
     print(thrname, time.ctime(time.time()))
-    count -= 1

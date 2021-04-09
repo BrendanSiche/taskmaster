@@ -126,11 +126,12 @@ def check_on_process(param):
         if param.get('starttime') != None and elem.get('confirm') == None:
             error = 'Error : Process ' + param['cmd'] + ' of pid '  + str(elem['process'].pid)  + ' exited with code: ' + str(elem['process'].poll()) + ' before reaching set start time'
             print(error)
+        print("-----ok------")
 
 def follow_conf_launch(param):
-    i = how_many_running(param)[2]
+    ran, done, cur = how_many_running(param)
     j = param['numprocs']
-    j = j - i
+    j = j - cur
     for x in range(j):
         execute_subprocess(param)
 
@@ -182,15 +183,20 @@ def thprint(thrname, delay):
         time.sleep(0.1)
         print(thrname, time.ctime(time.time()))
 
+
+#def update_tsk(count):
+ #   print (config)
+  #      while 1:
+   #         process.background_check(config, count)
+    #        count+=1
+     #       print("tr")
+
 #A run toutes les secondes
-def background_check(config, count):
-    thr = bidon.Thr(1, "thr1", count)
-    thr.start()
+def background_check(config):
     print("THR NEW")
     for elem in config['programs']:
         check_on_process(config['programs'][elem])
         #print(config['programs'][elem])
-    thr.exit()
     print("THR EXIT")
     #clore le thread
 
