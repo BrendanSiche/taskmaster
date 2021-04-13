@@ -209,15 +209,12 @@ def grace_kill(param):
             logging.info(f"Gracefully killed process  : {param['cmd']} of pid: {str(elem['process'].pid)}")
     return(0)
 
-#A run toutes les secondes
 def background_check(config):
     if config['runing'] != 1:
         return
     for elem in config['programs']:
         logging.info(f'Thread : checking process {elem}')
         check_on_process(config['programs'][elem])
-        #print(config['programs'][elem])
-    #clore le thread
 
 def check_file(path):
     if path == None:
