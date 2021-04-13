@@ -11,7 +11,7 @@ programs:
       - 2
     startretries: 3
     starttime: 1
-    stopsignal: TERM
+    stopsignal: QUIT
     stoptime: 10
     stdout: /tmp/a.stdout
     stderr: /tmp/a.stderr
