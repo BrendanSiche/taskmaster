@@ -5,15 +5,6 @@ running = {}
 session_history = {}
 should_be_running = []
 
-def check_config(config):
-    for elem in config['programs']:
-        if (config['programs'][elem].get('stdout') != None and config['programs'][elem].get('stderr') == None) or (config['programs'][elem].get('stderr') != None and config['programs'][elem].get('stdout') == None):
-            print(f"{tskconsol.Tcolors.CRO}", tskconsol.Tcolors.colorize(tskconsol.Tcolors.UDRL + " Ivalid Config File : If you set one of stderr/stdout, you need to set both \n",91))
-            logging.error(f"\u271D Ivalid Config File : If you set one of stderr/stdout, you need to set both")
-            tools.log_mail('tskbidon@gmail.com', "Ivalid Config File : If you set one of stderr/stdout, you need to set both")
-            return False
-    return True
-
 def check_validfile():
     values = {"autorestart": str,
         "autostart": bool,
@@ -48,13 +39,24 @@ def check_validfile():
         logging.error(f"\u271D Ivalid Config File : 'programs' atribute not found")
         tools.log_mail('tskbidon@gmail.com', "Ivalid Config File : 'programs' atribute not found")
         exit()
-    if  check_config(config) == False:
+    if  check_config(param) == False:
         exit()
     for key in param['programs']:
         if config.Config.check_val(param['programs'][key],values) == False:
             exit()
     logging.info(f"\u2714 Config File : Check OK!")
+    param['runing'] = 1
     return param
+
+
+def check_config(config):
+    for elem in config['programs']:
+        if (config['programs'][elem].get('stdout') != None and config['programs'][elem].get('stderr') == None) or (config['programs'][elem].get('stderr') != None and config['programs'][elem].get('stdout') == None):
+            print(f"{tskconsol.Tcolors.CRO}", tskconsol.Tcolors.colorize(tskconsol.Tcolors.UDRL + " Ivalid Config File : If you set one of stderr/stdout, you need to set both \n",91))
+            logging.error(f"\u271D Ivalid Config File : If you set one of stderr/stdout, you need to set both")
+            tools.log_mail('tskbidon@gmail.com', "Ivalid Config File : If you set one of stderr/stdout, you need to set both")
+            return False
+    return True
 
 def execute_subprocess(param):
     if param['cmd'] not in running:
@@ -135,7 +137,7 @@ def check_on_process(param):
             error = 'Error : Process ' + param['cmd'] + ' of pid '  + str(elem['process'].pid)  + ' exited with code: ' + str(elem['process'].poll())
             tools.log_mail('tskbidon@gmail.com', error)
             print(error, param['autorestart'])
-            if param['autorestart'] == 'unexpected':
+            if param['autorestart'] == 'unexpected' and param.get('manstop') != True:
                 logging.error(f"\u271D Relaunching process following unexpected end")
                 print('relaunching process following unexpected end\n', prompt, end='',  flush=True)
                 tools.log_mail('tskbidon@gmail.com', 'relaunching process following unexpected end')
@@ -145,7 +147,7 @@ def check_on_process(param):
             print('relaunching process as expected', prompt, end='', flush=True)
             execute_subprocess(param)
         if (param.get('starttime') != None and param.get('starttime') != 0) and elem.get('confirm') == None:
-            error = 'Error : Process ' + param['cmd'] + ' of pid '  + str(elem['process'].pid)  + ' exited with code: ' + str(elem['process'].poll()) + ' before reaching set start time'
+            error = 'Error : Process ' + param['cmd'] + ' of pid '  + str(elem['process'].pid)  + ' exited with code: ' + str(elem['process'].poll()) + ' before reaching set start time\n'
             logging.error(f"\u271D {error}")
             tools.log_mail('tskbidon@gmail.com', error)
             print(error, prompt, end='', flush=True)
@@ -200,14 +202,15 @@ def grace_kill(param):
     for elem in running[name]:
         elem['process'].send_signal(signal_dict(param['stopsignal']))
         elem['killed_time'] = datetime.now()
-        time.sleep(0.2)
+        time.sleep(0.5)
         if elem['process'].poll() != None:
             logging.info(f"Gracefully killed process  : {param['cmd']} of pid: {str(elem['process'].pid)}")
-        print(elem['process'].poll())
     return(0)
 
 #A run toutes les secondes
 def background_check(config):
+    if config['runing'] != 1:
+        return
     for elem in config['programs']:
         logging.info(f'Thread : checking process {elem}')
         check_on_process(config['programs'][elem])

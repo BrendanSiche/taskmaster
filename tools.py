@@ -2,6 +2,7 @@ import threading, time, process, logging, smtplib, process
 
 def kill_it_with_fire(config):
     cur = 0
+    config['runing'] = 0
     for elem in config['programs']:
         process.grace_kill(config['programs'][elem])
     for elem in config['programs']:
@@ -29,7 +30,7 @@ class Thr(threading.Thread):
         self.name = name
         self.config = conf
     def run (self):
-        while 1 :
+        while 1:
             time.sleep(2)
             process.background_check(self.config)
         print_time(self.name)
