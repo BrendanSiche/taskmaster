@@ -20,10 +20,15 @@ class Tcolors():
     def colorize(text, color):
         return Tcolors.ESCAPE + (Tcolors.FORMAT % (color, )) + text + Tcolors.RESET
 
-def close(self):
-    if self.file:
-        self.file.close()
-        self.file = None
+def close(config):
+    while 1:
+        inpt = input()
+        if inpt == 'yes' or inpt == 'y':
+            tools.kill_it_with_fire(config)
+        elif inpt == 'no' or inpt == 'n':
+            exit()
+        elif inpt != 'yes' or inpt != 'y' or inpt != 'no' or inpt != 'n':
+            print(Tcolors.colorize("\t Bad input answer yes/no ",35))
 
 def restart_process(arg, conf):
     params = 0
@@ -153,7 +158,6 @@ def setup_config():
     logging.info(f"Config file Load")
     for key in config['programs']:
         numprocs = config['programs'][key]['numprocs']
-        print("LOOOLLL", numprocs)
         logging.info(f"Exec Process : {config['programs'][key]}")
         logging.info(f"Numprocs : {numprocs}")
         if numprocs > 1:
@@ -204,14 +208,8 @@ class TskConsol(cmd.Cmd):
         '\t\033[93m\033[1m quit/exit  : Quit taskmaster \n\033[94m| Usage : $> <quit>' 
         print(Tcolors.colorize("\t == * Quit/Exit * == ",35))
         print(Tcolors.colorize("\t == * Do you want kill all process? y/n * == ",35))
-        inpt = input()
-        if inpt == 'yes' or inpt == 'y':
-            tools.kill_it_with_fire(config)
-        elif inpt != 'no' or inpt != 'n':
-            print(Tcolors.colorize("Warning: If all process are not closed within 3 seconds after their gracefull kill, they will be force killed using SIGTERM \t  ",35))
-        elif inpt != 'yes' or inpt != 'y' or inpt != 'no' or inpt != 'n':
-            print(Tcolors.colorize("\t Bad input answer yes/no ",35))
-            inpt = input()
+        print(Tcolors.colorize("Warning: If all process are not closed within 3 seconds after their gracefull kill, they will be force killed using SIGTERM \t  ",35))
+        close(config)
         print("Bye!")
         return True
     def do_exit(self,arg):
