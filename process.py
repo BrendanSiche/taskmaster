@@ -59,6 +59,7 @@ def check_config(config):
     return True
 
 def execute_subprocess(param):
+    param['manstop'] = False
     if param['cmd'] not in running:
         running[param['cmd']] = []
     new = {}
@@ -142,7 +143,7 @@ def check_on_process(param):
                 print('relaunching process following unexpected end\n', prompt, end='',  flush=True)
                 tools.log_mail('tskbidon@gmail.com', 'relaunching process following unexpected end')
                 execute_subprocess(param)
-        if param['autorestart'] == True:
+        if param['autorestart'] == True and param.get('manstop') != True:
             logging.info(f"Relaunching process as expected")
             print('relaunching process as expected', prompt, end='', flush=True)
             execute_subprocess(param)
