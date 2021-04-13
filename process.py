@@ -33,6 +33,7 @@ def check_validfile():
         param = yaml.safe_load(yaml_file)
     if arg == 'defconf.yaml':
         logging.info(f"\u2714 Config File : Check OK!")
+        param['runing'] = 1
         return param
     if 'programs' not in param:
         print(f"{tskconsol.Tcolors.CRO}", tskconsol.Tcolors.colorize(tskconsol.Tcolors.UDRL + " Ivalid Config File : 'programs' atribute not found \n",91))
