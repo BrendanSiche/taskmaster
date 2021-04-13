@@ -4,6 +4,7 @@ import argparse, cmd, sys, signal, process, tools, time, logging, logging.config
 # BLUE = '94' CYAN = '96' MAGENTA = '35'
 
 config = []
+completion = []
 
 class Tcolors():
     BLD = '\033[1m'
@@ -152,6 +153,7 @@ def stat_process(arg, conf):
 
 def setup_config():
     global config
+    global completion
 
     config = process.check_validfile()
     if config != None:
@@ -174,6 +176,9 @@ def setup_config():
                 process.execute_subprocess(config['programs'][key])
         else:
             process.execute_subprocess(config['programs'][key])
+    completion = []
+    for elem in config['programs']:
+        completion.append(elem)
     return config
 
 
@@ -182,6 +187,7 @@ class TskConsol(cmd.Cmd):
     intro = f"\033[93m{Tcolors.BLD} ===== Taskmaster: another job control deamon ===== \n\
     \033[96m use '?' to view commands list or 'help <cmd>' to see the method of use a command\n{Tcolors.CLR}"
     global config
+    global completion
  
     def init_tsk(self):
         logging.info('Initialisation Taskmaster')
@@ -224,6 +230,42 @@ class TskConsol(cmd.Cmd):
         '\t\033[93m\033[1m quit/exit  : kill all process and quit taskmaster \n\033[94m| Usage : $> <exit>' 
         self.do_quit(arg)
         return True
+    def complete_start(self, text, line, begidx, endidx):
+        if not text:
+            complete = completion
+        else:
+            complete = [ f
+                            for f in completion
+                            if f.startswith(text)
+                            ]
+        return completion
+    def complete_stop(self, text, line, begidx, endidx):
+        if not text:
+            complete = completion
+        else:
+            complete = [ f
+                            for f in completion
+                            if f.startswith(text)
+                            ]
+        return completion
+    def complete_restart(self, text, line, begidx, endidx):
+        if not text:
+            complete = completion
+        else:
+            complete = [ f
+                            for f in completion
+                            if f.startswith(text)
+                            ]
+        return completion
+    def complete_status(self, text, line, begidx, endidx):
+        if not text:
+            complete = completion
+        else:
+            complete = [ f
+                            for f in completion
+                            if f.startswith(text)
+                            ]
+        return completion
     def handler(signum, frame):
         print(Tcolors.colorize("\t == * Caught CTRL-C, press enter to continue or exit/quit to leave* == \n", 91))
     signal.signal(signal.SIGINT, handler)
