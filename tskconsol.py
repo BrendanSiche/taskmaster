@@ -22,7 +22,7 @@ class Tcolors():
 
 def close(config):
     while 1:
-        inpt = input('Do you want kill all process? y/n')
+        inpt = input('Do you want kill all process? y/n ')
         if inpt == 'yes' or inpt == 'y':
             tools.kill_it_with_fire(config)
             exit()
@@ -47,6 +47,8 @@ def restart_process(arg, conf):
             if params[cur] not in conf['programs']:
                 logging.error(f"\u271D Program not found : {str(params[cur])}")
                 print(f"{Tcolors.CRO}", Tcolors.colorize(Tcolors.UDRL + " Program not found : " + str(params[cur]) + "\n",91))
+                err = " Program not found = " + str(params[cur])
+                tools.log_mail('tskbidon@gmail.com', err)
             else:
                 print(f"{Tcolors.GARR}",Tcolors.colorize(Tcolors.UDRL + " Program : " + str(params[cur]) + "\n",94))
                 process.grace_kill(config['programs'][params[cur]])
@@ -75,7 +77,8 @@ def stop_process(arg, conf):
         for elem in params:
             if params[cur] not in conf['programs']:
                 logging.error(f"\u271D Program not found : {str(params[cur])}")
-                tools.log_mail('tskbidon@gmail.com', 'Program not found ')
+                err = " Program not found = " + str(params[cur])
+                tools.log_mail('tskbidon@gmail.com', err)
                 print(f"{Tcolors.CRO}", Tcolors.colorize(Tcolors.UDRL + " Program not found : " + str(params[cur]) + "\n",91))
             else:
                 print(f"{Tcolors.GARR}",Tcolors.colorize(Tcolors.UDRL + " Program : " + str(params[cur]) + "\n",94))
@@ -100,7 +103,8 @@ def start_process(arg,conf):
             if params[cur] not in conf['programs']:
                 logging.error(f"\u271D Program not found : {str(params[cur])}")
                 print(f"{Tcolors.CRO}", Tcolors.colorize(Tcolors.UDRL + " Program not found : " + str(params[cur]) + "\n",91))
-                tools.log_mail('tskbidon@gmail.com', 'Program not found ')
+                err = " Program not found = " + str(params[cur])
+                tools.log_mail('tskbidon@gmail.com', err)
             else:
                 print(f"{Tcolors.GARR}",Tcolors.colorize(Tcolors.UDRL + " Program : " + str(params[cur]) + "\n",94))
                 process.follow_conf_launch(config['programs'][params[cur]])
@@ -123,7 +127,8 @@ def stat_process(arg, conf):
     if len(params) == 1:
         if params[0] not in conf['programs']:
             logging.error(f"\u271D Program not found : {str(params[0])}")
-            tools.log_mail('tskbidon@gmail.com', 'Program not found ')
+            err = " Program not found = " + str(params[cur])
+            tools.log_mail('tskbidon@gmail.com', err)
             print(f"{Tcolors.CRO}", Tcolors.colorize(Tcolors.UDRL + " Program not found : " + str(params[0]) + "\n",91))
         else:
             print(f"{Tcolors.GARR}",Tcolors.colorize(Tcolors.UDRL + " Program : " + str(params[0]) + "\n",94))
@@ -136,6 +141,8 @@ def stat_process(arg, conf):
             if params[cur] not in conf['programs']:
                 logging.error(f"\u271D Program not found : {str(params[cur])}")
                 print(f"{Tcolors.CRO}", Tcolors.colorize(Tcolors.UDRL + " Program not found : " + str(params[cur]) + "\n",91))
+                err = " Program not found = " + str(params[cur])
+                tools.log_mail('tskbidon@gmail.com', err)
             else:
                 print(f"{Tcolors.GARR}",Tcolors.colorize(Tcolors.UDRL + " Program : " + str(params[cur]) + "\n",94))
                 ran = process.how_many_running(conf['programs'][params[cur]])[2]

@@ -17,6 +17,7 @@ def log_mail(toaddrs, msg):
     server.ehlo()
     server.starttls()
     server.ehlo()
+    print("MES=>" , msg)
     server.login('tskbidon@gmail.com', 'Lalicorne')  
     server.sendmail('tskbidon@gmail.com', toaddrs, msg)  
     server.quit()

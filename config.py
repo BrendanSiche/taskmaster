@@ -43,7 +43,7 @@ class Config():
         with open('defconf.yaml', 'w') as yaml_file:
             yaml.dump(default_conf, yaml_file, default_flow_style=False)
         logging.warning(f"Config : Default Config file Created: -> 'defconf.yaml'")
-        tools.log_mail('tskbidon@gmail.com', "Config : Default Config file Created: -> defconf.yaml")
+        tools.log_mail('tskbidon@gmail.com', "Config _ Default Config file Created = defconf.yaml")
         print(f"\t {tskconsol.Tcolors.GARR} ", tskconsol.Tcolors.colorize(" == * Config file Created: ->' defconf.yaml '" +" * == \n",91))
         return yaml_file 
 
@@ -55,14 +55,14 @@ class Config():
                 return False
             if isinstance(param[key], int):
                 if param[key] < 0:
-                    err ='Error: -->'+ key + ' Invalid value : '+ str(param[key]) + ' Expected type: not neg val'
+                    err ='Error: -->'+ key + ' Invalid value = '+ str(param[key]) + ' Expected type: not neg val'
                     tools.log_mail('tskbidon@gmail.com', err)
                     Config.p_error(err)
                 return False
             if isinstance(param[key], val[key]):
                 if param[key] == "autorestart":
                     if param[key] != "unexpected" and param[key] != "always" and param[key] != "never":
-                        err ='Error: --> '+ key + ' Invalid value : ' + param[key] + ' Expected type: unexpected/always/never'
+                        err ='Error: --> '+ key + ' Invalid value = ' + param[key] + ' Expected type= unexpected/always/never'
                         tools.log_mail('tskbidon@gmail.com', err)
                         Config.p_error(err)
                         return False

@@ -38,7 +38,7 @@ def check_validfile():
     if 'programs' not in param:
         print(f"{tskconsol.Tcolors.CRO}", tskconsol.Tcolors.colorize(tskconsol.Tcolors.UDRL + " Ivalid Config File : 'programs' atribute not found \n",91))
         logging.error(f"\u271D Ivalid Config File : 'programs' atribute not found")
-        tools.log_mail('tskbidon@gmail.com', "Ivalid Config File : 'programs' atribute not found")
+        tools.log_mail('tskbidon@gmail.com', "Ivalid Config File = 'programs' atribute not found")
         exit()
     if  check_config(param) == False:
         exit()
@@ -135,7 +135,7 @@ def check_on_process(param):
     prompt = f"{tskconsol.Tcolors.BLINK}\033[35m{tskconsol.Tcolors.BLD} Taskmaster BJ $> {tskconsol.Tcolors.CLR}"
     for elem in ran:
         if elem['process'].poll() not in param['exitcodes'] and param.get('manstop') != True:
-            error = 'Error : Process ' + param['cmd'] + ' of pid '  + str(elem['process'].pid)  + ' exited with code: ' + str(elem['process'].poll()) + '\n'
+            error = 'Error = Process ' + param['cmd'] + ' of pid '  + str(elem['process'].pid)  + ' exited with code= ' + str(elem['process'].poll()) + '\n'
             tools.log_mail('tskbidon@gmail.com', error)
             print(error, prompt, end='', flush=True)
             if param['autorestart'] == 'unexpected' and param.get('manstop') != True:
@@ -148,7 +148,7 @@ def check_on_process(param):
             print('relaunching process as expected', prompt, end='', flush=True)
             execute_subprocess(param)
         if (param.get('starttime') != None and param.get('starttime') != 0) and elem.get('confirm') == None:
-            error = 'Error : Process ' + param['cmd'] + ' of pid '  + str(elem['process'].pid)  + ' exited with code: ' + str(elem['process'].poll()) + ' before reaching set start time\n'
+            error = 'Error = Process ' + param['cmd'] + ' of pid '  + str(elem['process'].pid)  + ' exited with code= ' + str(elem['process'].poll()) + ' before reaching set start time\n'
             logging.error(f"\u271D {error}")
             tools.log_mail('tskbidon@gmail.com', error)
             print(error, prompt, end='', flush=True)
