@@ -7,9 +7,6 @@ class Config():
 
     def creat_defconfig():
         default_conf = {
-            'General': {
-                'jsp': 'lol'
-            },
             'programs': {
                 'ls': {
                     'cmd' : '/bin/ls',
@@ -20,7 +17,7 @@ class Config():
                     "autorestart" : 'unexpected',
                     "exitcodes" : [0,2],
                     "startretries" : 3,
-                    "starttime" : 5,
+                    "starttime" : 0,
                     "stopsignal" : 'TERM',
                     "stoptime" : 10,
                     "stdout" : '/tmp/ls.stdout',
@@ -35,7 +32,7 @@ class Config():
                     "autorestart" : 'unexpected',
                     "exitcodes" : [0,2],
                     "startretries" : 3,
-                    "starttime" : 5,
+                    "starttime" : 0,
                     "stopsignal" : 'TERM',
                     "stoptime" : 10,
                     "stdout" : '/tmp/pwd.stdout',

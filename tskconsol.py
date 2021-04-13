@@ -22,7 +22,7 @@ class Tcolors():
 
 def close(config):
     while 1:
-        inpt = input()
+        inpt = input('Do you want kill all process? y/n')
         if inpt == 'yes' or inpt == 'y':
             tools.kill_it_with_fire(config)
             exit()
