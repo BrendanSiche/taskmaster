@@ -1,7 +1,6 @@
-import yaml,threading, subprocess, time, os, sys, signal, tskconsol, logging, config
+import yaml,threading, subprocess, time, os, sys, signal, tskconsol, logging, config, tools
 from datetime import datetime
-import config
-import bidon
+
 running = {}
 session_history = {}
 should_be_running = []
@@ -34,6 +33,7 @@ def check_validfile():
     if 'programs' not in param:
         print(f"{tskconsol.Tcolors.CRO}", tskconsol.Tcolors.colorize(tskconsol.Tcolors.UDRL + " Ivalid Config File : 'programs' atribute not found \n",91))
         logging.error(f"\u271D Ivalid Config File : 'programs' atribute not found")
+        tools.log_mail('tskbidon@gmail.com', "Ivalid Config File : 'programs' atribute not found")
         exit()
     for key in param['programs']:
         if config.Config.check_val(param['programs'][key],values) == False:
@@ -110,8 +110,6 @@ def how_many_running(param):
     running[name] = new_running
     logging.info(f"\u2714 Process : {str(done)} process of {name}")
     logging.info(f"\u231B Process : {str(cur)} process of {name} still running ...")
-#    print(f"{tskconsol.Tcolors.GARR}",tskconsol.Tcolors.colorize(str(done) + ' process of ' + name + ' have been executed',94))
-#    print(tskconsol.Tcolors.colorize(str(cur) + ' process of ' + name + ' still running ...',94),f"{tskconsol.Tcolors.ST}",)
     return(ran,done,cur)
 
 def check_on_process(param):
@@ -120,10 +118,12 @@ def check_on_process(param):
     for elem in ran:
         if elem['process'].poll() not in param['exitcodes']:
             error = 'Error : Process ' + param['cmd'] + ' of pid '  + str(elem['process'].pid)  + ' exited with code: ' + str(elem['process'].poll())
+            tools.log_mail('tskbidon@gmail.com', error)
             print(error, param['autorestart'])
             if param['autorestart'] == 'unexpected':
                 logging.error(f"\u271D Relaunching process following unexpected end")
                 print('relaunching process following unexpected end\n', prompt, end='',  flush=True)
+                tools.log_mail('tskbidon@gmail.com', 'relaunching process following unexpected end')
                 execute_subprocess(param)
         if param['autorestart'] == True:
             logging.info(f"Relaunching process as expected")
@@ -132,6 +132,7 @@ def check_on_process(param):
         if (param.get('starttime') != None and param.get('starttime') != 0) and elem.get('confirm') == None:
             error = 'Error : Process ' + param['cmd'] + ' of pid '  + str(elem['process'].pid)  + ' exited with code: ' + str(elem['process'].poll()) + ' before reaching set start time'
             logging.error(f"\u271D {error}")
+            tools.log_mail('tskbidon@gmail.com', error)
             print(error, prompt, end='', flush=True)
 
 def follow_conf_launch(param):
@@ -187,18 +188,6 @@ def grace_kill(param):
         logging.info(f"{elem['process'].poll()}")
         print(elem['process'].poll())
     return(0)
-
-def kill_it_with_fire(config):
-    cur = 0
-    for elem in config['programs']:
-        grace_kill(config['programs'][elem])
-    for elem in config['programs']:
-        cur += how_many_running(config['programs'][elem])[2]
-    if cur != 0:
-        time.sleep(3)
-        for elem in config['programs']:
-            force_kill(config['programs'][elem])
-    
 
 #A run toutes les secondes
 def background_check(config):

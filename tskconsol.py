@@ -1,4 +1,4 @@
-import argparse, cmd,sys, signal, process, bidon, time,logging, logging.config
+import argparse, cmd, sys, signal, process, tools, time, logging, logging.config
 
 # RED = '91' , GREEN = '92' YELLOW = '93'
 # BLUE = '94' CYAN = '96' MAGENTA = '35'
@@ -31,6 +31,7 @@ def restart_process(arg, conf):
         params = arg.split()
     if params == 0:
         logging.error(f"\u271D Restart Cmd without Args")
+        tools.log_mail('tskbidon@gmail.com', 'Restart Cmd without Args')
         print(Tcolors.colorize(Tcolors.CRO + " == * /!\ Restart Command Needs A Program Name Valid: /!\ * == \n",91))
         print("\n")
         return (0)
@@ -59,6 +60,7 @@ def stop_process(arg, conf):
         params = arg.split()
     if params == 0:
         logging.error(f"\u271D Stop Cmd without Args")
+        tools.log_mail('tskbidon@gmail.com', 'Stop Cmd without Args')
         print(Tcolors.colorize(Tcolors.CRO + " == * /!\ Stop Command Needs A Program Name Valid: /!\ * == \n",91))
         print("\n")
         return (0)
@@ -67,6 +69,7 @@ def stop_process(arg, conf):
         for elem in params:
             if params[cur] not in conf['programs']:
                 logging.error(f"\u271D Program not found : {str(params[cur])}")
+                tools.log_mail('tskbidon@gmail.com', 'Program not found ')
                 print(f"{Tcolors.CRO}", Tcolors.colorize(Tcolors.UDRL + " Program not found : " + str(params[cur]) + "\n",91))
             else:
                 print(f"{Tcolors.GARR}",Tcolors.colorize(Tcolors.UDRL + " Program : " + str(params[cur]) + "\n",94))
@@ -81,6 +84,7 @@ def start_process(arg,conf):
         params = arg.split()
     if params == 0:
         logging.error(f"\u271D Start Cmd without Args")
+        tools.log_mail('tskbidon@gmail.com', 'Start Cmd without Args')
         print(Tcolors.colorize(Tcolors.CRO + " == * /!\ Start Command Needs A Program Name Valid: /!\ * == \n",91))
         print("\n")
         return (0)
@@ -90,10 +94,10 @@ def start_process(arg,conf):
             if params[cur] not in conf['programs']:
                 logging.error(f"\u271D Program not found : {str(params[cur])}")
                 print(f"{Tcolors.CRO}", Tcolors.colorize(Tcolors.UDRL + " Program not found : " + str(params[cur]) + "\n",91))
+                tools.log_mail('tskbidon@gmail.com', 'Program not found ')
             else:
                 print(f"{Tcolors.GARR}",Tcolors.colorize(Tcolors.UDRL + " Program : " + str(params[cur]) + "\n",94))
                 process.follow_conf_launch(config['programs'][params[cur]])
-                #process.check_on_process(config['programs'][params[cur]])
             cur +=1
             print("\n")
         return (0)
@@ -113,6 +117,7 @@ def stat_process(arg, conf):
     if len(params) == 1:
         if params[0] not in conf['programs']:
             logging.error(f"\u271D Program not found : {str(params[0])}")
+            tools.log_mail('tskbidon@gmail.com', 'Program not found ')
             print(f"{Tcolors.CRO}", Tcolors.colorize(Tcolors.UDRL + " Program not found : " + str(params[0]) + "\n",91))
         else:
             print(f"{Tcolors.GARR}",Tcolors.colorize(Tcolors.UDRL + " Program : " + str(params[0]) + "\n",94))
@@ -143,7 +148,6 @@ def setup_config():
         print("\n")
     print(Tcolors.colorize(Tcolors.UDRL + " ... Config file Load ... \n", 91))
     logging.info(f"Config file Load")
-    #logging.info(f'Thread : checking process {elem}')
     for key in config['programs']:
         numprocs = config['programs'][key]['numprocs']
         print("LOOOLLL", numprocs)
@@ -164,15 +168,12 @@ class TskConsol(cmd.Cmd):
     \033[96m use '?' to view commands list or 'help <cmd>' to see the method of use a command\n{Tcolors.CLR}"
     global config
  
-    count = 0
-    file = None
-
     def init_tsk(self):
         logging.info('Initialisation Taskmaster')
+        tools.log_mail('tskbidon@gmail.com', 'Initialisation Taskmaster')
         print(Tcolors.colorize(" == Config file == \n",93))
         config = setup_config()
         return config
-        #print(Tcolors.colorize(" == Config file == \n",93))
     def do_status(self,arg):
         '\t\033[93m\033[1m status: shows all controlled process \n\033[94m| Usage for all: $> <status> \n| Usage for specific(s) process: $> <status [process1 ...]>' 
         print(Tcolors.colorize("\t == * Status * == \n",35))
@@ -196,19 +197,23 @@ class TskConsol(cmd.Cmd):
         config = self.init_tsk()
     def do_quit(self,arg):
         logging.warning('Exit/Quit Taskmaster')
-        '\t\033[93m\033[1m quit/exit  : kill all process and quit taskmaster \n\033[94m| Usage : $> <quit>' 
+        tools.log_mail('tskbidon@gmail.com', 'Exit/Quit Taskmaster')
+        '\t\033[93m\033[1m quit/exit  : Quit taskmaster \n\033[94m| Usage : $> <quit>' 
         print(Tcolors.colorize("\t == * Quit/Exit * == ",35))
-        print(Tcolors.colorize("\t == * Do you want quit Taskmaster? y/n * == ",35))
-        print(Tcolors.colorize("\t == * All processes will be killed  * == ",35))
-      # self.close()
-      # force_kill si on veux 
+        print(Tcolors.colorize("\t == * Do you want kill all process? y/n * == ",35))
+        inpt = input()
+        if inpt == 'yes' or inpt == 'y':
+            tools.kill_it_with_fire(config)
+        elif inpt != 'no' or inpt != 'n':
+            print(Tcolors.colorize("Warning: If all process are not closed within 3 seconds after their gracefull kill, they will be force killed using SIGTERM \t  ",35))
+        elif inpt != 'yes' or inpt != 'y' or inpt != 'no' or inpt != 'n':
+            print(Tcolors.colorize("\t Bad input answer yes/no ",35))
+            inpt = input()
         print("Bye!")
         return True
     def do_exit(self,arg):
         '\t\033[93m\033[1m quit/exit  : kill all process and quit taskmaster \n\033[94m| Usage : $> <exit>' 
         self.do_quit(arg)
-        return True
-    def do_EOF(self,arg):
         return True
     def handler(signum, frame):
         print(Tcolors.colorize("\t == * Caught CTRL-C, press enter to continue or exit/quit to leave* == \n", 91))
@@ -216,13 +221,10 @@ class TskConsol(cmd.Cmd):
 
 def loop():
     config = TskConsol().init_tsk()
-    thr = bidon.Thr(1,"th1",config)
+    thr = tools.Thr(1,"th1",config)
     thr.daemon = True
     thr.start()
     logging.info('Starting Thread')
-    print("in loop")
     TskConsol().cmdloop()
-
-    print("end loop")
 
 
