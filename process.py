@@ -59,7 +59,6 @@ def check_config(config):
     return True
 
 def execute_subprocess(param):
-    param['manstop'] = False
     if param['cmd'] not in running:
         running[param['cmd']] = []
     new = {}
@@ -134,10 +133,10 @@ def check_on_process(param):
     ran, done, cur = how_many_running(param)
     prompt = f"{tskconsol.Tcolors.BLINK}\033[35m{tskconsol.Tcolors.BLD} Taskmaster BJ $> {tskconsol.Tcolors.CLR}"
     for elem in ran:
-        if elem['process'].poll() not in param['exitcodes']:
-            error = 'Error : Process ' + param['cmd'] + ' of pid '  + str(elem['process'].pid)  + ' exited with code: ' + str(elem['process'].poll())
+        if elem['process'].poll() not in param['exitcodes'] and param.get('manstop') != True:
+            error = 'Error : Process ' + param['cmd'] + ' of pid '  + str(elem['process'].pid)  + ' exited with code: ' + str(elem['process'].poll()) + '\n'
             tools.log_mail('tskbidon@gmail.com', error)
-            print(error, param['autorestart'])
+            print(error, prompt, end='', flush=True)
             if param['autorestart'] == 'unexpected' and param.get('manstop') != True:
                 logging.error(f"\u271D Relaunching process following unexpected end")
                 print('relaunching process following unexpected end\n', prompt, end='',  flush=True)
@@ -200,6 +199,7 @@ def grace_kill(param):
     check_on_process(param)
     if running.get(name) == None:
         return(0)
+    param['manstop'] = True
     for elem in running[name]:
         elem['process'].send_signal(signal_dict(param['stopsignal']))
         elem['killed_time'] = datetime.now()
