@@ -8,4 +8,6 @@ import logging.config
 import os
 
 if __name__ == "__main__":
+  logging.basicConfig(filename="taskmst.log",format='%(asctime)s %(levelname)-8s %(name)-15s %(message)s',level=logging.DEBUG
+  )
   tskconsol.loop()

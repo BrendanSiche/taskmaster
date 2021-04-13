@@ -19,6 +19,10 @@ def check_validfile():
         "stoptime": int,
         "umask": int,
         "workingdir": str,}
+    if len(sys.argv) > 2:
+        logging.info("Too many files")
+        print(f"{tskconsol.Tcolors.CRO}", tskconsol.Tcolors.colorize(tskconsol.Tcolors.UDRL + " Too many files",91))
+        exit()
     if len(sys.argv) == 2:
         arg = sys.argv[1]
         logging.info(f"Config : Config file -> {sys.argv[1]}")
@@ -183,12 +187,9 @@ def grace_kill(param):
     if running.get(name) == None:
         return(0)
     for elem in running[name]:
-        elem['process'].send_signal(signal_dict(param['stopsignal']))
+        #elem['process'].send_signal(signal_dict(param['stopsignal']))
         elem['killed_time'] = datetime.now()
-        time.sleep(0.2)
-        if elem['process'].poll() != None:
-            print('lalala')
-            logging.info(f"Gracefully killed process  : {param['cmd']} of pid: {str(elem['process'].pid)}")
+        logging.info(f"{elem['process'].poll()}")
         print(elem['process'].poll())
     return(0)
 
