@@ -25,6 +25,7 @@ def close(config):
         inpt = input()
         if inpt == 'yes' or inpt == 'y':
             tools.kill_it_with_fire(config)
+            exit()
         elif inpt == 'no' or inpt == 'n':
             exit()
         elif inpt != 'yes' or inpt != 'y' or inpt != 'no' or inpt != 'n':
