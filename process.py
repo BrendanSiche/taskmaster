@@ -8,8 +8,9 @@ should_be_running = []
 def check_config(config):
    for elem in config['programs']:
         if (config['programs'][elem].get('stdout') != None and config['programs'][elem].get('stderr') == None) or (config['programs'][elem].get('stderr') != None and config['programs'][elem].get('stdout') == None):
-         print(f"{tskconsol.Tcolors.CRO}", tskconsol.Tcolors.colorize(tskconsol.Tcolors.UDRL + " Ivalid Config File : If you set one of stderr/stdout, you need to set both \n",91))
+        print(f"{tskconsol.Tcolors.CRO}", tskconsol.Tcolors.colorize(tskconsol.Tcolors.UDRL + " Ivalid Config File : If you set one of stderr/stdout, you need to set both \n",91))
         logging.error(f"\u271D Ivalid Config File : If you set one of stderr/stdout, you need to set both")
+        tools.log_mail('tskbidon@gmail.com', "Ivalid Config File : If you set one of stderr/stdout, you need to set both")
         return False
     return True
 
