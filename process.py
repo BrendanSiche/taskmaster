@@ -183,9 +183,12 @@ def grace_kill(param):
     if running.get(name) == None:
         return(0)
     for elem in running[name]:
-        #elem['process'].send_signal(signal_dict(param['stopsignal']))
+        elem['process'].send_signal(signal_dict(param['stopsignal']))
         elem['killed_time'] = datetime.now()
-        logging.info(f"{elem['process'].poll()}")
+        time.sleep(0.2)
+        if elem['process'].poll() != None:
+            print('lalala')
+            logging.info(f"Gracefully killed process  : {param['cmd']} of pid: {str(elem['process'].pid)}")
         print(elem['process'].poll())
     return(0)
 
