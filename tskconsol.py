@@ -141,6 +141,9 @@ def setup_config():
     global config
 
     config = process.check_validfile()
+    if config != None:
+        print(Tcolors.colorize(Tcolors.UDRL + "Error Config file ... \n", 91))
+        logging.error(f"Error Config file ")
     for key, value in config['programs'].items():
         print(Tcolors.colorize(key + " : \n",92))
         for k, elem in value.items():

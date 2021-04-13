@@ -1,15 +1,15 @@
-import threading, time, process, logging, smtplib
+import threading, time, process, logging, smtplib, process
 
 def kill_it_with_fire(config):
     cur = 0
     for elem in config['programs']:
-        grace_kill(config['programs'][elem])
+        process.grace_kill(config['programs'][elem])
     for elem in config['programs']:
-        cur += how_many_running(config['programs'][elem])[2]
+        cur += process.how_many_running(config['programs'][elem])[2]
     if cur != 0:
         time.sleep(3)
         for elem in config['programs']:
-            force_kill(config['programs'][elem])
+            process.force_kill(config['programs'][elem])
 
 def log_mail(toaddrs, msg):
     server = smtplib.SMTP('smtp.gmail.com', 587)  
