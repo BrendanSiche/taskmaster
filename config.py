@@ -22,6 +22,8 @@ class Config():
                     "stoptime" : 10,
                     "stdout" : '/tmp/ls.stdout',
                     "stderr" : '/tmp/ls.stderr',
+                    "env":
+                        {"STARTED_BY": "taskmaster"},
                     },
                 'pwd' : {
                     'cmd' : '/bin/pwd',
@@ -37,6 +39,8 @@ class Config():
                     "stoptime" : 10,
                     "stdout" : '/tmp/pwd.stdout',
                     "stderr" : '/tmp/pwd.stderr',
+                    "env":
+                        {"STARTED_BY": "taskmaster"},
                 }
                 }
             }

@@ -18,7 +18,8 @@ def check_validfile():
         "stopsignal": str,
         "stoptime": int,
         "umask": int,
-        "workingdir": str,}
+        "workingdir": str,
+        "env": list,}
     if len(sys.argv) > 2:
         logging.info("Too many files")
         print(f"{tskconsol.Tcolors.CRO}", tskconsol.Tcolors.colorize(tskconsol.Tcolors.UDRL + " Too many files",91))

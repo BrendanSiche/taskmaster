@@ -1,0 +1,36 @@
+programs:
+  a.out:
+    cmd: "./a.out"
+    numprocs: 5
+    umask: 022
+    workingdir: ./test/
+    autostart: true
+    autorestart: unexpected
+    exitcodes:
+      - 0
+      - 2
+    env:
+        Started_By: 'Taskmaster'
+        Answer: '42'
+    startretries: 3
+    starttime: 1
+    stopsignal: QUIT
+    stoptime: 10
+    stdout: /tmp/a.stdout
+    stderr: /tmp/a.stderr
+  ls:
+    cmd: "ls -la"
+    numprocs: 1
+    umask: 022
+    workingdir: /tmp
+    autostart: true
+    autorestart: false
+    exitcodes:
+      - 0
+      - 2
+    startretries: 3
+    starttime: 0
+    stopsignal: TERM
+    stoptime: 10
+    stdout: /tmp/ls.stdout
+    stderr: /tmp/ls.stderr
