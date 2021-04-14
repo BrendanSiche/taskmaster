@@ -1,6 +1,6 @@
 programs:
   a.out:
-    cmd: "./a.out"
+    cmd: 'a.out'
     numprocs: 5
     umask: 022
     workingdir: ./test/

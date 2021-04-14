@@ -37,7 +37,7 @@ def check_validfile():
         logging.error(f"\u271D Ivalid Config File : 'programs' atribute not found")
         tools.log_mail('tskbidon@gmail.com', "Ivalid Config File = 'programs' atribute not found")
         exit()
-    if  check_config(param) == False:
+    if  config.Config.check_config(param) == False:
         exit()
     for key in param['programs']:
         if config.Config.check_val(param['programs'][key],values) == False:
@@ -45,16 +45,6 @@ def check_validfile():
     logging.info(f"\u2714 Config File : Check OK!")
     param['runing'] = 1
     return param
-
-
-def check_config(config):
-    for elem in config['programs']:
-        if (config['programs'][elem].get('stdout') != None and config['programs'][elem].get('stderr') == None) or (config['programs'][elem].get('stderr') != None and config['programs'][elem].get('stdout') == None):
-            print(f"{tskconsol.Tcolors.CRO}", tskconsol.Tcolors.colorize(tskconsol.Tcolors.UDRL + " Ivalid Config File : If you set one of stderr/stdout, you need to set both \n",91))
-            logging.error(f"\u271D Ivalid Config File : If you set one of stderr/stdout, you need to set both")
-            tools.log_mail('tskbidon@gmail.com', "Ivalid Config File = If you set one of stderr/stdout, you need to set both")
-            return False
-    return True
 
 def execute_subprocess(param):
     if param['cmd'] not in running:
@@ -69,9 +59,21 @@ def execute_subprocess(param):
         env = env | param['env']
     if check_file(param.get('stdout')) and check_file(param.get('stderr')):
         with open(param['stdout'], 'a') as sout, open(param['stderr'], 'a') as serr:
-            process = subprocess.Popen(cmd, cwd=cwd, stdout=sout, stderr=serr, umask=umsk, env=env)
+            try:
+                process = subprocess.Popen(cmd, cwd=cwd, stdout=sout, stderr=serr, umask=umsk, env=env)
+            except:
+                print(f"{tskconsol.Tcolors.CRO}", tskconsol.Tcolors.colorize(tskconsol.Tcolors.UDRL + " Failed to execute :" + param['cmd'] + "\n",91))
+                logging.error(f"\u271D Failed to launch :" + param['cmd'])
+                tools.log_mail('tskbidon@gmail.com', "Failed to launch " + param['cmd'])
+                return 
     else:
-        process = subprocess.Popen(cmd, cwd=cwd, umask=umsk, env=env)
+        try:
+            process = subprocess.Popen(cmd, cwd=cwd, umask=umsk, env=env)
+        except:
+            print(f"{tskconsol.Tcolors.CRO}", tskconsol.Tcolors.colorize(tskconsol.Tcolors.UDRL + " Failed to execute :" + param['cmd'] + "\n",91))
+            logging.error(f"\u271D Failed to launch :" + param['cmd'])
+            tools.log_mail('tskbidon@gmail.com', "Failed to launch" + param['cmd'])
+            return
     pname = param['cmd'] + ' process number: ' + str(len(running[param['cmd']]))
     new['id'] = pname
     new['process'] = process
