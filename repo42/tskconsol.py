@@ -241,7 +241,7 @@ class TskConsol(cmd.Cmd):
         print(Tcolors.colorize("\t == * Restart * == \n",35))
         restart_process(arg, config)
     def do_reload(self,arg):
-        '\t\033[93m\033[1m reload  : reload cconfig file \n\033[94m| Usage : $> <reload [process ...]>' 
+        '\t\033[93m\033[1m reload  : reload config file \n\033[94m| Usage : $> <reload [process ...]>' 
         print(Tcolors.colorize("\t == * Reload * == \n",35))
         logging.warning('Reloadig Config File')
         config = self.init_tsk()
@@ -299,8 +299,13 @@ class TskConsol(cmd.Cmd):
         print(Tcolors.colorize("\t == * Caught CTRL-C, press enter to continue or exit/quit to leave* == \n", 91))
     signal.signal(signal.SIGINT, handler)
 
+def testfunc(signum, frame):
+    TskConsol.do_reload()
+
+
 def loop():
     config = TskConsol().init_tsk()
+    signal.signal(signal.SIGHUP, testfunc)
     thr = tools.Thr(1,"th1",config)
     thr.daemon = True
     thr.start()

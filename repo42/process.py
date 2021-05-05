@@ -56,8 +56,8 @@ def execute_subprocess(param):
     new = {}
     cmd = param['cmd'].split(' ')
     string = ''
-    cwd = param['workingdir'] if param['workingdir'] else None     
-    umsk = param['umask'] if param['umask'] else -1
+    cwd = param.get('workingdir')
+    umsk = param.get('umask') if param['umask'] else -1
     env = os.environ.copy()
     if 'env' in param:
         env = env | param['env']
@@ -69,7 +69,7 @@ def execute_subprocess(param):
                 print(f"{tskconsol.Tcolors.CRO}", tskconsol.Tcolors.colorize(tskconsol.Tcolors.UDRL + " Failed to execute :" + param['cmd'] + "\n",91))
                 logging.error(f"\u271D Failed to launch :" + param['cmd'])
                 tools.log_mail('tskbidon@gmail.com', "Failed to launch " + param['cmd'])
-                return 
+                return(-1)
     else:
         try:
             process = subprocess.Popen(cmd, cwd=cwd, umask=umsk, env=env)
@@ -77,13 +77,14 @@ def execute_subprocess(param):
             print(f"{tskconsol.Tcolors.CRO}", tskconsol.Tcolors.colorize(tskconsol.Tcolors.UDRL + " Failed to execute :" + param['cmd'] + "\n",91))
             logging.error(f"\u271D Failed to launch :" + param['cmd'])
             tools.log_mail('tskbidon@gmail.com', "Failed to launch" + param['cmd'])
-            return
+            return(-1)
     pname = param['cmd'] + ' process number: ' + str(len(running[param['cmd']]))
     new['id'] = pname
     new['process'] = process
     new['conf'] = param
     new['start_time'] = datetime.now()
     running[param['cmd']].append(new)
+    return(0)
 
 
 def check_uptime(first, second):
@@ -137,6 +138,11 @@ def check_on_process(param):
     ran, done, cur = how_many_running(param)
     prompt = f"{tskconsol.Tcolors.BLINK}\033[35m{tskconsol.Tcolors.BLD} Taskmaster BJ $> {tskconsol.Tcolors.CLR}"
     for elem in ran:
+        if param.get('startretries') == None:
+            target = 10
+        else:
+            target = param['startretries']
+        res = 1
         if elem['process'].poll() not in param.get('exitcodes') and param.get('manstop') != True:
             error = 'Error = Process ' + param['cmd'] + ' of pid '  + str(elem['process'].pid)  + ' exited with code = ' + str(elem['process'].poll()) + '\n'
             tools.log_mail('tskbidon@gmail.com', error)
@@ -145,11 +151,17 @@ def check_on_process(param):
                 logging.error(f"\u271D Relaunching process following unexpected end")
                 print('relaunching process following unexpected end\n', prompt, end='',  flush=True)
                 tools.log_mail('tskbidon@gmail.com', 'relaunching process following unexpected end')
-                execute_subprocess(param)
+                while res != 0 and target > 0:
+                    res = execute_subprocess(param)
+                    target -= 1
         if param.get('autorestart') == 'true' and param.get('manstop') != True:
             logging.info(f"Relaunching process as expected")
             print('relaunching process as expected', prompt, end='', flush=True)
-            execute_subprocess(param)
+            while res != 0 and target > 0:
+                res = execute_subprocess(param)
+                target -= 1
+        if target == 0:
+            print('Gave up relaunching process\n', prompt, end='',  flush=True)
         if (param.get('starttime') != None and param.get('starttime') != 0) and elem.get('confirm') == None:
             error = 'Error = Process ' + param['cmd'] + ' of pid '  + str(elem['process'].pid)  + ' exited with code = ' + str(elem['process'].poll()) + ' before reaching set start time\n'
             logging.error(f"\u271D {error}")
@@ -160,9 +172,19 @@ def follow_conf_launch(param):
     ran, done, cur = how_many_running(param)
     j = param.get('numprocs')
     j = j - cur
+    prompt = f"{tskconsol.Tcolors.BLINK}\033[35m{tskconsol.Tcolors.BLD} Taskmaster BJ $> {tskconsol.Tcolors.CLR}"
     if j > 0:
         for x in range(j):
-            execute_subprocess(param)
+            if param.get('startretries') == None:
+                target = 10
+            else:
+                target = param['startretries']
+            res = 1
+            while res != 0 and target > 0:
+                res = execute_subprocess(param)
+                target -= 1
+            if target == 0:
+                print('Gave up relaunching process\n', prompt, end='',  flush=True)
     else:
         j = j * -1
         name = param['cmd']

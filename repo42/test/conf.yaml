@@ -3,16 +3,14 @@ programs:
     cmd: "./a.out"
     numprocs: 1
     umask: 022
-    workingdir: ./test/
     autostart: 'true'
-    autorestart: unexpected
+    autorestart: 'true'
     exitcodes:
       - 0
       - 2
     env:
         Started_By: 'Taskmaster'
         Answer: '42'
-    startretries: 3
     starttime: 1
     stopsignal: QUIT
     stoptime: 10
